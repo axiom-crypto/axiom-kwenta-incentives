@@ -36,5 +36,5 @@ jobs:
       - name: Run Forge tests
         run: |
           export BASE_PROVIDER_URI=${{ secrets.BASE_PROVIDER_URI }}
-          forge test -vvv
+          forge test -vvvv
         id: test
