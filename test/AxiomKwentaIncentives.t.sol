@@ -48,14 +48,17 @@ contract AxiomKwentaIncentivesTest is AxiomTest {
         input = AxiomInput({ blockNumbers: blockNumbers, txIdxs: txIdxs, logIdxs: logIdxs, numClaims: 1 });
 
         querySchema = axiomVm.readCircuit("app/axiom/claim.circuit.ts", "aaaa");
-        axiomIncentives = new AxiomKwentaIncentives(axiomV2QueryAddress, synthetixCoreAddress, querySchema);
+
+        bytes32[] memory querySchemas = new bytes32[](1);
+        querySchemas[0] = querySchema;
+        axiomIncentives = new AxiomKwentaIncentives(axiomV2QueryAddress, querySchemas, synthetixCoreAddress);
     }
 
     function test_proveClaim() public {
         // set up optional parameters for the query callback and fees
         bytes memory callbackExtraData = bytes("deadbeef00000000000000000000000000000000000000000000000000000000");
         IAxiomV2Query.AxiomV2FeeData memory feeData = IAxiomV2Query.AxiomV2FeeData({
-            maxFeePerGas: 35 gwei,
+            maxFeePerGas: 1 gwei,
             callbackGasLimit: 1_000_000,
             overrideAxiomQueryFee: 0
         });
@@ -76,7 +79,7 @@ contract AxiomKwentaIncentivesTest is AxiomTest {
 
         // check that claimId was updated correctly
         require(
-            axiomIncentives.lastClaimedId(uint128(uint256(results[2]))) == uint256(results[1]),
+            axiomIncentives.lastClaimedId(querySchema, uint256(results[2])) == uint256(results[1]),
             "Last claim ID not updated"
         );
     }

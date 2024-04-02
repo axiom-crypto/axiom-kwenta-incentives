@@ -3,7 +3,7 @@
   out = "out"
   solc = "0.8.19"
   libs = ["lib"]
-  remappings = ["@axiom-crypto/axiom-std/=lib/axiom-std/src/"]
+  remappings = ["@axiom-crypto/axiom-std/=lib/axiom-std/src/","@axiom-crypto/axiom-incentives/=lib/axiom-incentives/src/"]
   ffi = true
   ast = true
 
