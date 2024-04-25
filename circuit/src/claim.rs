@@ -19,7 +19,7 @@ use axiom_sdk::{
 
 use lazy_static::lazy_static;
 
-const MAX_INPUTS: usize = 16;
+pub const MAX_INPUTS: usize = 10;
 
 lazy_static! {
     static ref CONDITIONAL_ORDER_EXECUTED_SCHEMA: Option<H256> = H256::from_str("0x3f4c4edf80aee6ea6f4fb3aed498a467e30ed1482bc06539ffe892cf7304e334").ok();
@@ -31,7 +31,6 @@ pub struct ClaimInput {
     pub block_numbers: FixLenVec<usize, MAX_INPUTS>,
     pub tx_idxs: FixLenVec<usize, MAX_INPUTS>,
     pub log_idxs: FixLenVec<usize, MAX_INPUTS>,
-    pub executor_fees: FixLenVec<usize, MAX_INPUTS>,
     pub num_claims: usize,
 }
 
@@ -131,8 +130,8 @@ impl AxiomComputeFn for ClaimInput {
             let event_contract = api.from_hi_lo(event_contract);
             let event_contract_is_equal = gate.is_equal(api.ctx(), event_contract, kwenta_contract);
             let is_out_of_range = gate.is_zero(api.ctx(), in_range[i]);
-            let event_contract_or_zero = gate.or(api.ctx(), event_contract_is_equal, is_out_of_range);
-            api.ctx().constrain_equal(&event_contract_or_zero, &one);
+            let event_contract_or_one = gate.or(api.ctx(), event_contract_is_equal, is_out_of_range);
+            api.ctx().constrain_equal(&event_contract_or_one, &one);
 
             // Check the account
             let account_id_market_id_hilo = api
@@ -145,8 +144,8 @@ impl AxiomComputeFn for ClaimInput {
             } else {
                 let account_id_is_equal = gate.is_equal(api.ctx(), account_id, logged_account_id);
                 let is_out_of_range = gate.is_zero(api.ctx(), in_range[i]);
-                let account_id_or_zero = gate.or(api.ctx(), account_id_is_equal, is_out_of_range);
-                api.ctx().constrain_equal(&account_id_or_zero, &one);
+                let account_id_or_one = gate.or(api.ctx(), account_id_is_equal, is_out_of_range);
+                api.ctx().constrain_equal(&account_id_or_one, &one);
             }
         }
 
@@ -183,7 +182,7 @@ impl AxiomComputeFn for ClaimInput {
         vec![
             first_claim_id.into(),
             last_claim_id.into(),
-            
+            logged_account_id.into(),
             total_executor_fee.into(),
         ]
     }

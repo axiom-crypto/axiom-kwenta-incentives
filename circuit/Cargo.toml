@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.82"
-axiom-circuit = "0.1.1"
-axiom-sdk = "0.1.1"
+axiom-circuit = { git = "https://github.com/axiom-crypto/axiom-sdk-rs.git", branch = "staging" }
+axiom-sdk = { git = "https://github.com/axiom-crypto/axiom-sdk-rs.git", branch = "staging" }
 lazy_static = "1.4.0"
 serde = "1.0.198"
