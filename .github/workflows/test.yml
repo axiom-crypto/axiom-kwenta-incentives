@@ -48,11 +48,13 @@ jobs:
           submodules: recursive
 
       - name: Run Cargo Build
+        working-directory: ./circuit
         run: |
           cargo build --verbose
         id: build
 
       - name: Run Cargo tests
+        working-directory: ./circuit
         run: |
           export PROVIDER_URI=${{ secrets.BASE_PROVIDER_URI }}
           cargo test
