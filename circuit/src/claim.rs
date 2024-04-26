@@ -130,8 +130,8 @@ impl AxiomComputeFn for ClaimInput {
             let event_contract = api.from_hi_lo(event_contract);
             let event_contract_is_equal = gate.is_equal(api.ctx(), event_contract, kwenta_contract);
             let is_out_of_range = gate.is_zero(api.ctx(), in_range[i]);
-            let event_contract_or_one = gate.or(api.ctx(), event_contract_is_equal, is_out_of_range);
-            api.ctx().constrain_equal(&event_contract_or_one, &one);
+            let event_contract_or_out_of_range = gate.or(api.ctx(), event_contract_is_equal, is_out_of_range);
+            api.ctx().constrain_equal(&event_contract_or_out_of_range, &one);
 
             // Check the account
             let account_id_market_id_hilo = api
@@ -144,8 +144,8 @@ impl AxiomComputeFn for ClaimInput {
             } else {
                 let account_id_is_equal = gate.is_equal(api.ctx(), account_id, logged_account_id);
                 let is_out_of_range = gate.is_zero(api.ctx(), in_range[i]);
-                let account_id_or_one = gate.or(api.ctx(), account_id_is_equal, is_out_of_range);
-                api.ctx().constrain_equal(&account_id_or_one, &one);
+                let account_id_or_out_of_range = gate.or(api.ctx(), account_id_is_equal, is_out_of_range);
+                api.ctx().constrain_equal(&account_id_or_out_of_range, &one);
             }
         }
 
