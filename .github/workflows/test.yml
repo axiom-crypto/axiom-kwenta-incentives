@@ -38,3 +38,23 @@ jobs:
           export BASE_PROVIDER_URI=${{ secrets.BASE_PROVIDER_URI }}
           forge test -vvvv
         id: test
+
+  circuit:
+    name: Circuit project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Run Cargo Build
+        run: |
+          cargo build --verbose
+        id: build
+
+      - name: Run Cargo tests
+        run: |
+          export PROVIDER_URI=${{ secrets.BASE_PROVIDER_URI }}
+          cargo test
+        id: test
+
