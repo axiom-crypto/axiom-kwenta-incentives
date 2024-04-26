@@ -1,6 +1,9 @@
 use std::{fmt::Debug, str::FromStr};
 
-use axiom_circuit::{axiom_eth::halo2curves::ff::Field, input::{flatten::FixLenVec, raw_input::RawInput}};
+use axiom_circuit::{
+    axiom_eth::halo2curves::ff::Field, 
+    input::{flatten::FixLenVec, raw_input::RawInput},
+};
 
 use axiom_sdk::{
     axiom::{AxiomAPI, AxiomComputeFn, AxiomComputeInput, AxiomResult}, 
@@ -9,12 +12,12 @@ use axiom_sdk::{
         types::H256, 
     },
     halo2_base::{
-        gates::{GateInstructions, RangeInstructions}, 
+        gates::{GateInstructions, RangeInstructions},
         AssignedValue,
         QuantumCell::Constant,
     },
-    Fr, 
-    HiLo
+    Fr,
+    HiLo,
 };
 
 use lazy_static::lazy_static;
@@ -102,17 +105,14 @@ impl AxiomComputeFn for ClaimInput {
                 claim_ids[i],
                 192
             );
-            let claim_id_is_zero = gate.is_zero(
-                api.ctx(),
-                claim_ids[i]
-            );
-            let is_less_than_or_zero = gate.or(
+            let is_out_of_range = gate.is_zero(api.ctx(), in_range[i]);
+            let is_less_than_or_out_of_range = gate.or(
                 api.ctx(),
                 is_less_than,
-                claim_id_is_zero
+                is_out_of_range,
             );
             api.ctx().constrain_equal(
-                &is_less_than_or_zero,
+                &is_less_than_or_out_of_range,
                 &one
             );
         }
@@ -172,16 +172,16 @@ impl AxiomComputeFn for ClaimInput {
         }
         
         // Output [start_claim_id, end_claim_id, incentive_id, total_value]
-        let first_claim_id = claim_ids[0];
-        let last_idx = gate.sub(api.ctx(), assigned_inputs.num_claims, one);
-        let last_claim_id = gate.select_from_idx(
+        let start_claim_id = claim_ids[0];
+        let end_idx = gate.sub(api.ctx(), assigned_inputs.num_claims, one);
+        let end_claim_id = gate.select_from_idx(
             api.ctx(),
             claim_ids,
-            last_idx,
+            end_idx,
         );
         vec![
-            first_claim_id.into(),
-            last_claim_id.into(),
+            start_claim_id.into(),
+            end_claim_id.into(),
             logged_account_id.into(),
             total_executor_fee.into(),
         ]
